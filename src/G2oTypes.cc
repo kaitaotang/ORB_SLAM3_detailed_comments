@@ -575,7 +575,7 @@ EdgeInertial::EdgeInertial(IMU::Preintegrated *pInt):JRg(pInt->JRg.cast<double>(
     Matrix9d Info = pInt->C.block<9,9>(0,0).cast<double>().inverse();
     // 3. 强制让其成为对角矩阵
     Info = (Info+Info.transpose())/2;
-    // 4. 让特征值很小的时候置为0，再重新计算信息矩阵（暂不知这么操作的目的是什么，先搞清楚操作流程吧）
+    // 4. 让特征值很小的时候置为0，再重新计算信息矩阵（暂不知这么操作的目的是什么，先搞清楚操作流程吧） 答：降维
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double,9,9> > es(Info);
     Eigen::Matrix<double,9,1> eigs = es.eigenvalues();
     for(int i=0;i<9;i++)
@@ -623,7 +623,8 @@ void EdgeInertial::linearizeOplus()
     const VertexPose* VP2 = static_cast<const VertexPose*>(_vertices[4]);
     const VertexVelocity* VV2= static_cast<const VertexVelocity*>(_vertices[5]);
     const IMU::Bias b1(VA1->estimate()[0],VA1->estimate()[1],VA1->estimate()[2],VG1->estimate()[0],VG1->estimate()[1],VG1->estimate()[2]);
-    const IMU::Bias db = mpInt->GetDeltaBias(b1);
+    const IMU::Bias db = mpInt->GetDeltaBias(b1); //获得当前偏置与输入偏置的改变量
+
     Eigen::Vector3d dbg;
     dbg << db.bwx, db.bwy, db.bwz;
 

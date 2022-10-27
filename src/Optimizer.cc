@@ -413,6 +413,8 @@ int Optimizer::PoseOptimization(Frame *pFrame)
  * @param[in] bRecInit 调用这个函数的位置并没有传这个参数，因此它的值默认为false
  * @return int 返回优化后的内点数
  */
+// 位置和旋转固定
+// 优化量：速度，陀螺仪和加速计的bias
 int Optimizer::PoseInertialOptimizationLastKeyFrame(Frame *pFrame, bool bRecInit)
 {
     // 1. 创建g2o优化器，初始化顶点和边
@@ -3733,7 +3735,7 @@ void Optimizer::InertialOptimization(
         optimizer.addVertex(VV);
     }
 
-    // Biases
+    // Biases,陀螺仪 和 加速度计的偏置，分别只设置1个
     // 3. 确定偏置节点，陀螺仪与加速度计
     VertexGyroBias *VG = new VertexGyroBias(vpKFs.front());
     VG->setId(maxKFid * 2 + 2);
